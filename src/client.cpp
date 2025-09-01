@@ -17,15 +17,20 @@ int main() {
 
     connect(client_socket, reinterpret_cast<sockaddr *>(&server_address), sizeof(server_address));
 
-    char message[1024];
-    scanf("%s", message);
-    send(client_socket, message, strlen(message), 0);
 
-    char buffer[1024];
-    const long bytes_received = recv(client_socket, buffer, sizeof(buffer) - 1, 0);
-    if (bytes_received > 0) {
-        buffer[bytes_received] = '\0';
-        std::cout << "Client received: ec" << buffer << std::endl;
+    while (true) {
+        char message[1024];
+        fgets(message, 1024, stdin);
+        send(client_socket, message, strlen(message), 0);
+
+        if (strcmp(message, "exit") == 0) break;
+
+        char buffer[1024];
+        const long bytes_received = recv(client_socket, buffer, sizeof(buffer) - 1, 0);
+        if (bytes_received > 0) {
+            buffer[bytes_received] = '\0';
+            std::cout << "Client received:" << buffer << std::endl;
+        }
     }
 
     close(client_socket);

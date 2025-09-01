@@ -1,5 +1,6 @@
 //
 // Created by anthony on 29-08-2025.
+//
 #include <cstring>
 #include <iostream>
 #include <netinet/in.h>
@@ -23,10 +24,13 @@ const std::vector<Command *> commands = {new Echo()};
 std::string use_command(const std::string &command_input) {
 
     std::vector<std::string> tokens;
-    boost::split(tokens, command_input, boost::is_any_of(" "), boost::token_compress_on);
+    boost::split(tokens, command_input, boost::is_any_of(" "), boost::token_compress_off);
 
 
-    if (!tokens.empty()) for (Command *command : commands) if (command->name == tokens.at(0)) return command->run(tokens);
+
+    if (!tokens.empty()) for (Command *command : commands) {
+        if (command->name == tokens[0]) return command->run(tokens);
+    }
     return "command does not exist";
 }
 
@@ -58,8 +62,8 @@ int main() {
             buffer[bytes_received] = '\0';
             if (strcmp(buffer, "exit") == 0) break;
 
+
             std::string str_output = use_command(buffer);
-            std::cout << str_output << std::endl;
 
             const char *output = str_output.c_str();
             send(client_socket, output, strlen(output), 0);

@@ -10,7 +10,7 @@
 class Echo : public Command {
 public:
 
-    const std::string name = "echo";
+    const std::string name;
 
 
     std::string run(std::vector<std::string> args) override;
