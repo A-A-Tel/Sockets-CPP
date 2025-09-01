@@ -40,7 +40,7 @@ int main() {
 
     sockaddr_in server_address{};
     server_address.sin_family = AF_INET;
-    server_address.sin_port = htons(8080);
+    server_address.sin_port = htons(8082);
     server_address.sin_addr.s_addr = INADDR_ANY;
 
     bind(server_socket, reinterpret_cast<sockaddr *>(&server_address), sizeof(server_address));
@@ -56,11 +56,11 @@ int main() {
 
     while (true) {
 
-        char buffer[1024];
+        char buffer[1025];
         const long bytes_received = recv(client_socket, buffer, sizeof(buffer) - 1, 0);
         if (bytes_received > 0) {
             buffer[bytes_received] = '\0';
-            if (strcmp(buffer, "exit") == 0) break;
+            if (strcmp(buffer, "exit\n") == 0) break;
 
 
             std::string str_output = use_command(buffer);
