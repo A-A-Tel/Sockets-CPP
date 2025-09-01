@@ -4,10 +4,15 @@ project(sockets)
 set(CMAKE_CXX_STANDARD 26)
 include_directories(include/)
 
-add_executable(sockets
+
+add_executable(server
         include/sockets/Command.hpp
-        src/Echo.cpp
         include/sockets/Echo.hpp
+
+        src/Echo.cpp
         src/server.cpp
+)
+
+add_executable(client
         src/client.cpp
 )
