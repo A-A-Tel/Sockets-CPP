@@ -40,7 +40,7 @@ int main() {
 
     sockaddr_in server_address{};
     server_address.sin_family = AF_INET;
-    server_address.sin_port = htons(8084);
+    server_address.sin_port = htons(8089);
     server_address.sin_addr.s_addr = INADDR_ANY;
 
     bind(server_socket, reinterpret_cast<sockaddr *>(&server_address), sizeof(server_address));
