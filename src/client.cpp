@@ -10,10 +10,15 @@
 int main() {
     const int client_socket = socket(AF_INET, SOCK_STREAM, 0);
 
+    char inet_address[16];
+    scanf("%s", inet_address);
+
+
     sockaddr_in server_address{};
     server_address.sin_family = AF_INET;
-    server_address.sin_port = htons(8082);
-    server_address.sin_addr.s_addr = inet_addr("127.0.0.1");
+    server_address.sin_port = htons(8084);
+    server_address.sin_addr.s_addr = inet_addr(inet_address);
+    fgets(inet_address, 0, stdin);
 
     connect(client_socket, reinterpret_cast<sockaddr *>(&server_address), sizeof(server_address));
 

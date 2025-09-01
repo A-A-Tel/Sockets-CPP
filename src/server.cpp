@@ -31,7 +31,7 @@ std::string use_command(const std::string &command_input) {
     if (!tokens.empty()) for (Command *command : commands) {
         if (command->name == tokens[0]) return command->run(tokens);
     }
-    return "command does not exist";
+    return " command does not exist";
 }
 
 int main() {
@@ -40,7 +40,7 @@ int main() {
 
     sockaddr_in server_address{};
     server_address.sin_family = AF_INET;
-    server_address.sin_port = htons(8082);
+    server_address.sin_port = htons(8084);
     server_address.sin_addr.s_addr = INADDR_ANY;
 
     bind(server_socket, reinterpret_cast<sockaddr *>(&server_address), sizeof(server_address));
@@ -64,6 +64,7 @@ int main() {
 
 
             std::string str_output = use_command(buffer);
+
 
             const char *output = str_output.c_str();
             send(client_socket, output, strlen(output), 0);
