@@ -1,30 +1,41 @@
+//
+// Created by anthony on 29-08-2025.
+//
+#include <cstdio>
+#include <cstring>
 #include <iostream>
 #include <netinet/in.h>
-#include <sys/socket.h>
 #include <unistd.h>
 
-using namespace std;
+int main() {
 
-int main()
-{
-    int serverSocket = socket(AF_INET, SOCK_STREAM, 0);
+    const int server_socket = socket(AF_INET, SOCK_STREAM, 0);
 
-    sockaddr_in serverAddress{};
-    serverAddress.sin_family = AF_INET;
-    serverAddress.sin_port = htons(8080);
-    serverAddress.sin_addr.s_addr = INADDR_ANY;
+    sockaddr_in server_address{};
+    server_address.sin_family = AF_INET;
+    server_address.sin_port = htons(8080);
+    server_address.sin_addr.s_addr = INADDR_ANY;
 
-    bind(serverSocket, (sockaddr*)&serverAddress, sizeof(serverAddress));
+    bind(server_socket, reinterpret_cast<sockaddr *>(&server_address), sizeof(server_address));
 
-    listen(serverSocket, 5);
+    listen(server_socket, 5);
 
-    int clientSocket = accept(serverSocket, nullptr, nullptr);
+    sockaddr_in client_address{};
+    socklen_t client_len = sizeof(client_address);
+    const int client_socket = accept(server_socket, reinterpret_cast<sockaddr *>(&client_address), &client_len);
 
-    char buffer[1024] = {};
-    recv(clientSocket, buffer, sizeof(buffer), 0);
-    cout << "Message from client: " << buffer << endl;
+    char buffer[1024];
+    const long bytes_received = recv(client_socket, buffer, sizeof(buffer) - 1, 0);
+    if (bytes_received > 0) {
+        buffer[bytes_received] = '\0';
+        std::cout << "Client connected: %s\n" << buffer << std::endl;
+    }
 
-    close(serverSocket);
+    const char *message = "Hello World!\n";
+    send(client_socket, message, strlen(message), 0);
+
+    close(client_socket);
+    close(server_socket);
 
     return 0;
 }

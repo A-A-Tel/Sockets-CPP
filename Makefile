@@ -13,41 +13,52 @@ OBJ := $(OUT)/obj
 CXX_SOURCES := $(shell find $(SRC) -type f -name "*.cpp")
 CXX_HEADERS := $(shell find include/$(NAME)/ -type f -name "*.hpp")
 CXX_ARCHIVES := $(shell find $(LIB) -type f -name "*.a")
-CXX_OBJECTS := $(patsubst $(SRC)/%.cpp,$(OBJ)/%.o,$(CXX_SOURCES))
 
-FILE_NAME := $(NAME)-$(VERSION)
-EXEC := $(OUT)/exec/$(FILE_NAME)
-STATIC_LIB := $(OUT)/lib/lib$(FILE_NAME).a
+CLIENT_MAIN := $(SRC)/client.cpp
+SERVER_MAIN := $(SRC)/server.cpp
+
+COMMON_SOURCES := $(filter-out $(CLIENT_MAIN) $(SERVER_MAIN),$(CXX_SOURCES))
+
+COMMON_OBJECTS := $(patsubst $(SRC)/%.cpp,$(OBJ)/%.o,$(COMMON_SOURCES))
+CLIENT_OBJECT  := $(OBJ)/client.o
+SERVER_OBJECT  := $(OBJ)/server.o
+
+# outputs
+EXEC_CLIENT := $(OUT)/exec/$(NAME)-$(VERSION)-client
+EXEC_SERVER := $(OUT)/exec/$(NAME)-$(VERSION)-server
+STATIC_LIB  := $(OUT)/lib/lib$(NAME)-$(VERSION).a
 
 all: build
 
-# Build executable
-build: $(EXEC)
+build: $(EXEC_CLIENT) $(EXEC_SERVER)
 
-$(EXEC): $(CXX_OBJECTS)
+$(EXEC_CLIENT): $(COMMON_OBJECTS) $(CLIENT_OBJECT)
 	@mkdir -p $(dir $@)
-	$(COMPILER) $(CXX_OBJECTS) $(CXX_ARCHIVES) -o $@ $(LDFLAGS) $(FLAGS)
+	$(COMPILER) $^ $(CXX_ARCHIVES) -o $@ $(LDFLAGS) $(FLAGS)
 
-# Build static library
+$(EXEC_SERVER): $(COMMON_OBJECTS) $(SERVER_OBJECT)
+	@mkdir -p $(dir $@)
+	$(COMPILER) $^ $(CXX_ARCHIVES) -o $@ $(LDFLAGS) $(FLAGS)
+
 lib: $(STATIC_LIB)
 
-$(STATIC_LIB): $(CXX_OBJECTS)
+$(STATIC_LIB): $(COMMON_OBJECTS)
 	@mkdir -p $(dir $@)
-	ar rvs $@ $(CXX_OBJECTS)
+	ar rvs $@ $(COMMON_OBJECTS)
 
-# Object file compilation
 $(OBJ)/%.o: $(SRC)/%.cpp
 	@mkdir -p $(dir $@)
 	$(COMPILER) $(CXXFLAGS) -c $< -o $@ $(FLAGS)
 
-run: $(EXEC)
-	chmod +x $(EXEC)
-	$(EXEC)
+run-client: $(EXEC_CLIENT)
+	chmod +x $(EXEC_CLIENT)
+	$(EXEC_CLIENT)
+
+run-server: $(EXEC_SERVER)
+	chmod +x $(EXEC_SERVER)
+	$(EXEC_SERVER)
 
 clean:
 	rm -rf $(OUT)/lib/
 	rm -rf $(OUT)/exec/
-
-# !!! fix format
-#format:
-#	clang-format -style='{BasedOnStyle: GNU, PointerAlignment: Left}' -i $(CXX_SOURCES) $(CXX_HEADERS)
+	rm -rf $(OUT)/obj/
