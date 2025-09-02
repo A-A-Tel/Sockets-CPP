@@ -9,7 +9,9 @@ include_directories(${CMAKE_SOURCE_DIR}/include/)
 add_executable(server
         include/sockets/Command.hpp
         include/sockets/Echo.hpp
+        include/sockets/Append.hpp
 
+        src/Append.cpp
         src/Echo.cpp
         src/server.cpp
 )

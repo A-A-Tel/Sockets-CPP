@@ -14,7 +14,7 @@ public:
     virtual ~Command() = default;
 
 
-    const std::string name = "echo";
+    virtual std::string get_name() = 0;
 
 
     virtual std::string run(std::vector<std::string> args) = 0;

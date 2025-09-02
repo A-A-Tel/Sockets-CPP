@@ -10,10 +10,11 @@
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
 
+#include "sockets/Append.hpp"
 #include "sockets/Command.hpp"
 #include "sockets/Echo.hpp"
 
-const std::vector<Command *> commands = {new Echo()};
+const std::vector<Command *> commands = {new Echo(), new Append()};
 
 /**
  * This searches for a command matching its name and returns the output, or an error if the command does not exist.
@@ -29,7 +30,7 @@ std::string use_command(const std::string &command_input) {
 
 
     if (!tokens.empty()) for (Command *command : commands) {
-        if (command->name == tokens[0]) return command->run(tokens);
+        if (command->get_name() == tokens[0]) return command->run(tokens);
     }
     return " command does not exist";
 }
